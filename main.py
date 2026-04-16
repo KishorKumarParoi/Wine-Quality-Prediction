@@ -1,3 +1,12 @@
+import os
+
+# Set MLflow environment variables
+os.environ["MLFLOW_TRACKING_URI"] = (
+    "https://dagshub.com/KishorKumarParoi/Wine-Quality-Prediction.mlflow"
+)
+os.environ["MLFLOW_TRACKING_USERNAME"] = "KishorKumarParoi"
+os.environ["MLFLOW_TRACKING_PASSWORD"] = "c0edb772affc440233d8431ecf491d2e577ec401"
+
 from src.wine_quality_prediction import logger
 from src.wine_quality_prediction.pipeline.data_ingestion import (
     DataIngestionTrainingPipeline,
@@ -51,6 +60,21 @@ try:
     logger.info(f">>>>>> stage {STAGE_NAME} started <<<<<<")
     model_trainer = ModelTrainerTrainingPipeline()
     model_trainer.initiate_model_trainer()
+    logger.info(f">>>>>> stage {STAGE_NAME} completed <<<<<<\n\nx==========x")
+except Exception as e:
+    logger.exception(e)
+    raise e
+
+
+STAGE_NAME = "Model Evaluation Stage"
+try:
+    logger.info(f">>>>>> stage {STAGE_NAME} started <<<<<<")
+    from src.wine_quality_prediction.pipeline.model_evaluation import (
+        ModelEvaluationTrainingPipeline,
+    )
+
+    model_evaluation = ModelEvaluationTrainingPipeline()
+    model_evaluation.initiate_model_evaluation()
     logger.info(f">>>>>> stage {STAGE_NAME} completed <<<<<<\n\nx==========x")
 except Exception as e:
     logger.exception(e)
