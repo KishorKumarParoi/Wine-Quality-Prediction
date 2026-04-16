@@ -1,16 +1,28 @@
 COLUMNS:
-  fixed acidity: float64
-  volatile acidity: float64
-  citric acid: float64
-  residual sugar: float64
-  chlorides: float64
-  free sulfur dioxide: float64
-  total sulfur dioxide: float64
-  density: float64
-  pH: float64
-  sulphates: float64
-  alcohol: float64
-  quality: int64
+  fixed acidity:
+    dtype: float
+  volatile acidity:
+    dtype: float
+  citric acid:
+    dtype: float
+  residual sugar:
+    dtype: float
+  chlorides:
+    dtype: float
+  free sulfur dioxide:
+    dtype: float
+  total sulfur dioxide:
+    dtype: float
+  density:
+    dtype: float
+  pH:
+    dtype: float
+  sulphates:
+    dtype: float
+  alcohol:
+    dtype: float
+  quality:
+    dtype: int
 
 TARGET_COLUMN:
   name: quality

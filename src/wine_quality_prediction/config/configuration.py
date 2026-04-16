@@ -3,6 +3,7 @@ from src.wine_quality_prediction.utils.common import *
 
 from src.wine_quality_prediction.entity.config_entity import (
     DataIngestionConfig,
+    DataValidationConfig,
 )
 
 
@@ -30,3 +31,19 @@ class ConfigurationManager:
             unzip_dir=config.unzip_dir,
         )
         return data_ingestion_config
+
+    def get_data_validation_config(self) -> DataValidationConfig:
+        config = self.config.data_validation
+        schema = self.schema.COLUMNS
+
+        create_directories([config.root_dir])
+
+        data_validation_config = DataValidationConfig(
+            root_dir=config.root_dir,
+            STATUS_FILE=config.STATUS_FILE,
+            unzip_data_dir=config.unzip_data_dir,
+            all_schema=schema,
+        )
+
+        logger.info(f"Data validation config created with {len(schema)} columns")
+        return data_validation_config
