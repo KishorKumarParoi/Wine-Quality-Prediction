@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Wine Quality Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .error-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .error-header {
+            background: linear-gradient(135deg, #dc143c 0%, #ff6347 100%);
+            padding: 40px 20px;
+            color: white;
+        }
+
+        .error-header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .error-header p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .error-body {
+            padding: 50px 40px;
+        }
+
+        .error-emoji {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 1.1em;
+            color: #333;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(220, 20, 60, 0.1);
+            border-left: 4px solid #dc143c;
+            border-radius: 8px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        .error-message strong {
+            color: #dc143c;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            flex-direction: column;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b0000 0%, #d4af37 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #1a1a2e;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        @media (max-width: 600px) {
+            .error-body {
+                padding: 30px 20px;
+            }
+
+            .error-header h1 {
+                font-size: 1.5em;
+            }
+        }
+
+        .error-code {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-container">
+        <div class="error-header">
+            <h1>⚠️ Error Occurred</h1>
+            <p>Something went wrong</p>
+        </div>
+
+        <div class="error-body">
+            <div class="error-emoji">😕</div>
+
+            <div class="error-message">
+                <strong>Error Details:</strong>
+                {{ error }}
+            </div>
+
+            <div class="error-code">
+                Please check your input values and try again.
+            </div>
+
+            <div class="actions">
+                <a href="/" class="btn btn-primary">↩️ Back to Prediction Form</a>
+                <a href="/health" class="btn btn-secondary">💚 System Health Check</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

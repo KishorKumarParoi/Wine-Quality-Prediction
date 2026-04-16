@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Prediction</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8b0000 0%, #d4af37 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .wine-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group input {
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background: white;
+            color: #1a1a2e;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8b0000;
+            box-shadow: 0 0 10px rgba(139, 0, 0, 0.2);
+            background: rgba(139, 0, 0, 0.05);
+        }
+
+        .form-group input::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+
+        .input-hint {
+            font-size: 0.85em;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .form-footer {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #8b0000 0%, #d4af37 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(139, 0, 0, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 0, 0, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-reset {
+            background: #f0f0f0;
+            color: #1a1a2e;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+
+        .info-box {
+            background: rgba(212, 175, 55, 0.1);
+            border-left: 4px solid #d4af37;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 0.95em;
+            color: #333;
+        }
+
+        .info-box strong {
+            color: #8b0000;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .form-container {
+                padding: 25px;
+            }
+
+            .form-footer {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .section-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #8b0000;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group h3 {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="wine-icon">🍷</div>
+            <h1>Wine Quality Predictor</h1>
+            <p>Predict wine quality based on physicochemical properties</p>
+        </div>
+
+        <div class="form-container">
+            <div class="info-box">
+                <strong>ℹ️ How it works:</strong> Enter the physicochemical properties of your wine sample and our AI
+                model will predict its quality on a scale of 0-10.
+            </div>
+
+            <form method="post" action="/predict">
+                <div class="field-group">
+                    <h3>Acidity Measures</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="fixed_acidity">Fixed Acidity (g/dm³)</label>
+                            <input type="number" name="fixed_acidity" id="fixed_acidity" step="0.01"
+                                placeholder="e.g., 7.4" required>
+                            <span class="input-hint">Typical range: 4.6 - 15.9</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="volatile_acidity">Volatile Acidity (g/dm³)</label>
+                            <input type="number" name="volatile_acidity" id="volatile_acidity" step="0.01"
+                                placeholder="e.g., 0.7" required>
+                            <span class="input-hint">Typical range: 0.1 - 1.6</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="citric_acid">Citric Acid (g/dm³)</label>
+                            <input type="number" name="citric_acid" id="citric_acid" step="0.01" placeholder="e.g., 0.0"
+                                required>
+                            <span class="input-hint">Typical range: 0.0 - 1.0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <h3>Sugar & Minerals</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="residual_sugar">Residual Sugar (g/dm³)</label>
+                            <input type="number" name="residual_sugar" id="residual_sugar" step="0.01"
+                                placeholder="e.g., 1.9" required>
+                            <span class="input-hint">Typical range: 0.9 - 15.5</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="chlorides">Chlorides (g/dm³)</label>
+                            <input type="number" name="chlorides" id="chlorides" step="0.001" placeholder="e.g., 0.076"
+                                required>
+                            <span class="input-hint">Typical range: 0.012 - 0.611</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <h3>Sulfur Dioxide & Density</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="free_sulfur_dioxide">Free SO₂ (mg/dm³)</label>
+                            <input type="number" name="free_sulfur_dioxide" id="free_sulfur_dioxide" step="0.1"
+                                placeholder="e.g., 11" required>
+                            <span class="input-hint">Typical range: 1 - 72</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="total_sulfur_dioxide">Total SO₂ (mg/dm³)</label>
+                            <input type="number" name="total_sulfur_dioxide" id="total_sulfur_dioxide" step="0.1"
+                                placeholder="e.g., 34" required>
+                            <span class="input-hint">Typical range: 6 - 289</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="density">Density (g/cm³)</label>
+                            <input type="number" name="density" id="density" step="0.00001" placeholder="e.g., 0.9978"
+                                required>
+                            <span class="input-hint">Typical range: 0.9901 - 1.0037</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <h3>Chemical Properties</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="pH">pH Level</label>
+                            <input type="number" name="pH" id="pH" step="0.01" placeholder="e.g., 3.51" required>
+                            <span class="input-hint">Typical range: 2.74 - 4.01</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="sulphates">Sulphates (g/dm³)</label>
+                            <input type="number" name="sulphates" id="sulphates" step="0.01" placeholder="e.g., 0.56"
+                                required>
+                            <span class="input-hint">Typical range: 0.33 - 2.0</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="alcohol">Alcohol (% by volume)</label>
+                            <input type="number" name="alcohol" id="alcohol" step="0.1" placeholder="e.g., 11.0"
+                                required>
+                            <span class="input-hint">Typical range: 8.4 - 14.9</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="btn btn-primary">🔮 Predict Quality</button>
+                    <button type="reset" class="btn btn-reset">Clear Form</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
