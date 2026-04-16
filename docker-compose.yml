@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  wine-quality-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wine-quality-prediction
+    ports:
+      - "8080:8080"
+    environment:
+      - MLFLOW_TRACKING_URI=https://dagshub.com/KishorKumarParoi/Wine-Quality-Prediction.mlflow
+      - MLFLOW_TRACKING_USERNAME=${MLFLOW_TRACKING_USERNAME:-KishorKumarParoi}
+      - MLFLOW_TRACKING_PASSWORD=${MLFLOW_TRACKING_PASSWORD:-your_password_here}
+      - FLASK_ENV=production
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./artifacts:/app/artifacts
+      - ./logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - wine-quality-network
+
+networks:
+  wine-quality-network:
+    driver: bridge

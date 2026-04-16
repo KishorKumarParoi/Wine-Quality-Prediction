@@ -1,0 +1,137 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wine-quality-app
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+    version: v1.0
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: wine-quality-prediction
+  template:
+    metadata:
+      labels:
+        app: wine-quality-prediction
+        version: v1.0
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/health"
+    spec:
+      serviceAccountName: wine-quality-sa
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 1000
+      
+      imagePullSecrets:
+        - name: docker-registry-secret
+      
+      containers:
+      - name: wine-quality-app
+        image: kishorkumarparoi/wine-quality-prediction:latest
+        imagePullPolicy: Always
+        
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        
+        # Environment variables from ConfigMap and Secret
+        envFrom:
+        - configMapRef:
+            name: wine-quality-config
+        - secretRef:
+            name: mlflow-credentials
+        
+        # Resource requests and limits
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+        
+        # Liveness probe - checks if container is alive
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 40
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        # Readiness probe - checks if container is ready to accept traffic
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        
+        # Startup probe - checks if container finished starting up
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 0
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 8
+        
+        # Volume mounts for artifacts and logs
+        volumeMounts:
+        - name: artifacts
+          mountPath: /app/artifacts
+        - name: logs
+          mountPath: /app/logs
+        
+        # Security context for container
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities:
+            drop:
+              - ALL
+      
+      # Volumes
+      volumes:
+      - name: artifacts
+        persistentVolumeClaim:
+          claimName: wine-quality-artifacts-pvc
+      - name: logs
+        persistentVolumeClaim:
+          claimName: wine-quality-logs-pvc
+      
+      # Pod disruption budgets for high availability
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - wine-quality-prediction
+              topologyKey: kubernetes.io/hostname
+      
+      # Tolerations for node taints (if any)
+      tolerations:
+      - key: "workload"
+        operator: "Equal"
+        value: "ml-inference"
+        effect: "NoSchedule"

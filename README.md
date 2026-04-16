@@ -13,8 +13,9 @@ A production-ready MLOps project for predicting wine quality using machine learn
 - [Pipeline](#pipeline)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
-- [Docker Deployment](#docker-deployment)
+- [Docker & Kubernetes Deployment](#docker--kubernetes-deployment)
 - [Configuration](#configuration)
+- [Examples](#examples)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -212,21 +213,148 @@ The server runs on `http://localhost:5000`
 - **GET `/`** - Web UI
 - **GET `/health`** - Health check
 
-## Docker Deployment
+## Docker & Kubernetes Deployment
 
-### Build Docker Image
+### Docker Deployment
 
-```bash
-docker build -t wine-quality-prediction:latest .
-```
-
-### Run Docker Container
+#### Build Docker Image
 
 ```bash
-docker run -p 5000:5000 wine-quality-prediction:latest
+docker build -t kishorkumarparoi/wine-quality-prediction:latest .
 ```
 
-The API will be available at `http://localhost:5000`
+#### Run with Docker Compose (Recommended for Local Development)
+
+```bash
+# Start the application
+docker-compose up -d
+
+# View logs
+docker-compose logs -f wine-quality-app
+
+# Stop the application
+docker-compose down
+```
+
+The API will be available at `http://localhost:8080`
+
+#### Push to Docker Registry
+
+```bash
+docker tag kishorkumarparoi/wine-quality-prediction:latest \
+  <registry>/wine-quality-prediction:latest
+docker push <registry>/wine-quality-prediction:latest
+```
+
+### Kubernetes Deployment
+
+#### Quick Start (Recommended)
+
+```bash
+# Make deployment script executable
+chmod +x deploy.sh
+
+# Deploy to Kubernetes
+./deploy.sh k8s deploy wine-quality
+
+# Check status
+./deploy.sh k8s status
+
+# Access application (port forward)
+./deploy.sh k8s portforward 8080 8080
+```
+
+Visit: `http://localhost:8080`
+
+#### Manual Deployment
+
+```bash
+# Create namespace
+kubectl apply -f k8s/namespace.yaml
+
+# Create secrets (update credentials first!)
+kubectl apply -f k8s/secret.yaml
+
+# Deploy all manifests
+kubectl apply -k k8s/
+
+# Watch deployment progress
+kubectl rollout status deployment/wine-quality-app -n wine-quality
+```
+
+#### Verify Deployment
+
+```bash
+# Check pods
+kubectl get pods -n wine-quality
+
+# Check services
+kubectl get svc -n wine-quality
+
+# View logs
+kubectl logs -l app=wine-quality-prediction -n wine-quality
+```
+
+#### Update Application
+
+```bash
+# Build and push new image
+docker build -t kishorkumarparoi/wine-quality-prediction:v1.1.0 .
+docker push kishorkumarparoi/wine-quality-prediction:v1.1.0
+
+# Update Kubernetes deployment
+kubectl set image deployment/wine-quality-app \
+  wine-quality-app=kishorkumarparoi/wine-quality-prediction:v1.1.0 \
+  -n wine-quality
+```
+
+#### Scale Application
+
+```bash
+# Manual scaling
+kubectl scale deployment wine-quality-app --replicas=5 -n wine-quality
+
+# Or use deployment script
+./deploy.sh k8s scale 5
+```
+
+### Architecture
+
+**Kubernetes Components:**
+- **Deployment**: 3 replicas with auto-scaling (2-10 replicas)
+- **Service**: LoadBalancer for external access, ClusterIP for internal
+- **ConfigMap**: Non-sensitive configuration (MLFLOW_TRACKING_URI, etc.)
+- **Secret**: Sensitive credentials (MLflow authentication)
+- **PersistentVolumeClaim**: Storage for artifacts (10Gi) and logs (5Gi)
+- **HPA**: Horizontal Pod Autoscaler (CPU: 70%, Memory: 80%)
+- **NetworkPolicy**: Security policies for pod communication
+- **RBAC**: Role-based access control for service account
+
+**Health Checks:**
+- Liveness Probe: Checks if container is alive (every 30s)
+- Readiness Probe: Checks if container is ready for traffic (every 10s)
+- Startup Probe: Checks initial startup completion (every 5s)
+
+### Environment Variables
+
+**ConfigMap (`k8s/configmap.yaml`):**
+```yaml
+MLFLOW_TRACKING_URI: "https://dagshub.com/KishorKumarParoi/Wine-Quality-Prediction.mlflow"
+FLASK_ENV: "production"
+PYTHONUNBUFFERED: "1"
+```
+
+**Secret (`k8s/secret.yaml`) - Update with your credentials:**
+```yaml
+MLFLOW_TRACKING_USERNAME: "KishorKumarParoi"
+MLFLOW_TRACKING_PASSWORD: "your_token_here"
+```
+
+### For More Details
+
+- **Kubernetes Documentation**: See `DEPLOYMENT.md` for comprehensive guide
+- **Quick Start Guide**: See `K8S_QUICKSTART.md` for common operations
+- **Deployment Script**: Run `./deploy.sh help` for all available commands
 
 ## Configuration
 

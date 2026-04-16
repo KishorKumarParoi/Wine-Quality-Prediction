@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wine-quality-ingress
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # For HTTPS, uncomment the lines below and configure cert-manager
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # nginx.ingress.kubernetes.io/ssl-redirect: "true"
+spec:
+  # ingressClassName: nginx
+  rules:
+  - host: wine-quality.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: wine-quality-service-clusterip
+            port:
+              number: 8080
+  # For HTTPS, uncomment the lines below
+  # tls:
+  # - hosts:
+  #   - wine-quality.example.com
+  #   secretName: wine-quality-tls
+
+---
+# Simple ClusterIP service for internal communication
+apiVersion: v1
+kind: Service
+metadata:
+  name: wine-quality-internal
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+spec:
+  type: ClusterIP
+  clusterIP: None  # Headless service for StatefulSets or service discovery
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: wine-quality-prediction

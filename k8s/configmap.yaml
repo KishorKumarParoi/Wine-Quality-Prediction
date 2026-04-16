@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wine-quality-config
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+data:
+  MLFLOW_TRACKING_URI: "https://dagshub.com/KishorKumarParoi/Wine-Quality-Prediction.mlflow"
+  FLASK_ENV: "production"
+  PYTHONUNBUFFERED: "1"
+  LOG_LEVEL: "INFO"

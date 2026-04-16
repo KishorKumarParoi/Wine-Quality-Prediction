@@ -1,0 +1,59 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: wine-quality-network-policy
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+spec:
+  podSelector:
+    matchLabels:
+      app: wine-quality-prediction
+  policyTypes:
+  - Ingress
+  - Egress
+  
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8080
+  
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: default
+    ports:
+    - protocol: TCP
+      port: 8080
+  
+  egress:
+  # Allow DNS for external communication
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
+  
+  # Allow outbound HTTPS to MLflow (DagsHub)
+  - to:
+    - namespaceSelector: {}
+    ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 80
+  
+  # Allow access to Kubernetes services
+  - to:
+    - podSelector:
+        matchLabels:
+          app: wine-quality-prediction
+    ports:
+    - protocol: TCP
+      port: 8080

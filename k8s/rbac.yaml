@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: wine-quality-sa
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: wine-quality-role
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: wine-quality-rolebinding
+  namespace: wine-quality
+  labels:
+    app: wine-quality-prediction
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: wine-quality-role
+subjects:
+- kind: ServiceAccount
+  name: wine-quality-sa
+  namespace: wine-quality
