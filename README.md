@@ -63,21 +63,21 @@ The project follows a modular, production-ready architecture with the following 
 ### Setup
 
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/Wine-Quality-Prediction.git
-   cd Wine-Quality-Prediction
-   ```
+```bash
+git clone https://github.com/yourusername/Wine-Quality-Prediction.git
+cd Wine-Quality-Prediction
+```
 
 2. **Create a virtual environment**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
 
 3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+pip install -r requirements.txt
+```
 
 ## Project Structure
 
@@ -141,8 +141,6 @@ Run the complete training pipeline:
 ```bash
 python main.py
 ```
-
-Or use the Python API:
 
 ```python
 from src.datascience.pipeline.training_pipeline import TrainingPipeline
@@ -303,8 +301,6 @@ curl -X POST http://localhost:5000/predict \
   }'
 ```
 
-## Results & Performance Metrics
-
 The model achieves the following performance metrics on test data:
 
 | Metric | Score |
@@ -334,8 +330,6 @@ pip install -r requirements.txt
 docker --version
 ```
 
-## Contributing
-
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
@@ -351,7 +345,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Author:** Kishor Kumar Paroi  
-**Email:** kishorkumarparoi@example.com  
+**Email:** kishor.ruet.cse@gmail.com  
 **Last Updated:** April 2026  
 **Version:** 1.0.0
 ```
